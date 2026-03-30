@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BaseInteractable : MonoBehaviour, IInteractable
+public class RockInteractable : MonoBehaviour, IInteractable
 {
     [SerializeField] Transform mouthAttachPoint;
     [SerializeField] Transform environmentParent;

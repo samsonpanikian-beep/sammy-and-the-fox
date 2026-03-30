@@ -1,16 +1,21 @@
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class CameraFollow : MonoBehaviour
 {
     [SerializeField] Transform foxTarget;
+
+    [SerializeField] ClimbMechanic climbMechanic;
+
     Transform focusTarget;
     float focusBlend;
     float focusVelocity;
     bool isFocusing;
 
-    [SerializeField] float distance;
-    [SerializeField] float height;
+    [SerializeField] float regularDistance;
+    [SerializeField] float regularHeight;
+    [SerializeField] float mountedDistance;
+    [SerializeField] float mountedHeight;
 
     private float currentYAngle;
 
@@ -22,9 +27,20 @@ public class CameraFollow : MonoBehaviour
         float targetBlend = isFocusing ? 1f : 0f;
         focusBlend = Mathf.SmoothDamp(focusBlend, targetBlend, ref focusVelocity, 0.5f);
 
-        Vector3 lookTarget = Vector3.Lerp(
-        foxTarget.position + Vector3.up * height * 0.5f,
-        focusTarget != null ? focusTarget.position : foxTarget.position, focusBlend);
+        Vector3 lookTarget;
+        if (!climbMechanic.foxIsMounted)
+        {
+            lookTarget = Vector3.Lerp(
+            foxTarget.position + Vector3.up * regularHeight * 0.5f,
+            focusTarget != null ? focusTarget.position : foxTarget.position, focusBlend);
+        }
+        else
+        {
+            lookTarget = Vector3.Lerp(
+            foxTarget.position + Vector3.up * mountedHeight * 0.5f,
+            focusTarget != null ? focusTarget.position : foxTarget.position, focusBlend);
+        }
+        
 
         // Adjust y rotation
         float foxAngle = foxTarget.eulerAngles.y;
@@ -39,11 +55,18 @@ public class CameraFollow : MonoBehaviour
 
         // Calculate position
         Quaternion rotation = Quaternion.Euler(0f, currentYAngle, 0f);
-        Vector3 offset = rotation * new Vector3(0f, height, -distance);
+
+        Vector3 offset;
+        if (!climbMechanic.foxIsMounted)
+        { offset = rotation * new Vector3(0f, regularHeight, -regularDistance); }
+        else { offset = rotation * new Vector3(0f, mountedHeight, -mountedDistance); }
+
         transform.position = foxTarget.position + offset;
 
         // Always look at fox
-        transform.LookAt(lookTarget);
+        if(!climbMechanic.foxIsMounted) { transform.LookAt(lookTarget); }
+        else { transform.LookAt(lookTarget + Vector3.down * 5f); }
+        
     }
 
     public void FocusOn(Transform target)

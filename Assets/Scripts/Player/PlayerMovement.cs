@@ -78,30 +78,32 @@ public class PlayerMovement : MonoBehaviour
 
     private void Move()
     {
-        if (sprintInput) { moveSpeed = 23f; }
-        else { moveSpeed = 14f; }
-
-        Vector3 moveDirection = (transform.forward * verticalMovementInputRaw).normalized;
-        rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed), 1f * Time.deltaTime);
-
-        if (isGrounded)
+        if (!rb.isKinematic)
         {
-            rb.linearDamping = 0f;
-            downForce = -1f;
+            if (sprintInput) { moveSpeed = 23f; }
+            else { moveSpeed = 14f; }
 
-            if (jumpInput)
+            Vector3 moveDirection = (transform.forward * verticalMovementInputRaw).normalized;
+            rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed), 1f * Time.deltaTime);
+
+            if (isGrounded)
             {
-                rb.AddForce(0, jumpForce, 0);
+                rb.linearDamping = 0f;
+                downForce = -1f;
+
+                if (jumpInput)
+                {
+                    rb.AddForce(0, jumpForce, 0);
+                }
+            }
+            else
+            {
+                rb.linearDamping = 0.1f;
+
+                rb.AddForce(0, downForce, 0);
+                downForce -= 0.05f;
             }
         }
-        else
-        {
-            rb.linearDamping = 0.1f;
-
-            rb.AddForce(0, downForce, 0);
-            downForce -= 0.05f;
-        }
-        
     }
 
     private void OnDrawGizmos()

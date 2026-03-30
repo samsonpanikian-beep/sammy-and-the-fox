@@ -4,8 +4,19 @@ using UnityEngine;
 
 public class WaypointSystem : MonoBehaviour
 {
-    [SerializeField] Transform waypointsParent;
-    public Transform[] waypoints;
+    [SerializeField] Transform zone1WaypointsParent;
+    [SerializeField] Transform zone2WaypointsParent;
+    [SerializeField] Transform zone3WaypointsParent;
+    [SerializeField] Transform zone4WaypointsParent;
+    [SerializeField] Transform zone5WaypointsParent;
+
+    public Transform[] zone1Waypoints;
+    public Transform[] zone2Waypoints;
+    public Transform[] zone3Waypoints;
+    public Transform[] zone4Waypoints;
+    public Transform[] zone5Waypoints;
+
+    public Transform[] activeZoneWaypoints;
 
     public int currentWaypointIndex = 0;
 
@@ -19,12 +30,38 @@ public class WaypointSystem : MonoBehaviour
 
     private void Start()
     {
-        waypoints = new Transform[waypointsParent.childCount];
-
-        for (int i = 0; i < waypointsParent.childCount; i++)
+        zone1Waypoints = new Transform[zone1WaypointsParent.childCount];
+        for (int i = 0; i < zone1WaypointsParent.childCount; i++)
         {
-            waypoints[i] = waypointsParent.GetChild(i);
+            zone1Waypoints[i] = zone1WaypointsParent.GetChild(i);
         }
+
+        zone2Waypoints = new Transform[zone2WaypointsParent.childCount];
+        for (int i = 0; i < zone2WaypointsParent.childCount; i++)
+        {
+            zone2Waypoints[i] = zone2WaypointsParent.GetChild(i);
+        }
+        
+        zone3Waypoints = new Transform[zone3WaypointsParent.childCount];
+        for (int i = 0; i < zone3WaypointsParent.childCount; i++)
+        {
+            zone3Waypoints[i] = zone3WaypointsParent.GetChild(i);
+        }
+
+        zone4Waypoints = new Transform[zone4WaypointsParent.childCount];
+        for (int i = 0; i < zone4WaypointsParent.childCount; i++)
+        {
+            zone4Waypoints[i] = zone4WaypointsParent.GetChild(i);
+        }
+
+        zone5Waypoints = new Transform[zone5WaypointsParent.childCount];
+        for (int i = 0; i < zone5WaypointsParent.childCount; i++)
+        {
+            zone5Waypoints[i] = zone5WaypointsParent.GetChild(i);
+        }
+
+        // Initial assignment of active waypoints, done through game manager after that
+        activeZoneWaypoints = zone1Waypoints;
     }
 
     private void Update()
@@ -38,7 +75,8 @@ public class WaypointSystem : MonoBehaviour
     {
         if (canMove)
         {
-            Vector3 direction = (waypoints[currentWaypointIndex].position - transform.position);
+            Vector3 direction = (activeZoneWaypoints[currentWaypointIndex].position - transform.position);
+            
             direction.y = 0f;
 
             if (direction == Vector3.zero) { return; }
@@ -52,16 +90,16 @@ public class WaypointSystem : MonoBehaviour
     {
         if (canMove)
         {
-            Vector3 target = new Vector3(waypoints[currentWaypointIndex].position.x, transform.position.y, waypoints[currentWaypointIndex].position.z);
+            Vector3 target = new Vector3(activeZoneWaypoints[currentWaypointIndex].position.x, transform.position.y, activeZoneWaypoints[currentWaypointIndex].position.z);
             transform.position = Vector3.SmoothDamp(transform.position, target, ref smoothDampPosVelocity, moveSpeed);
         }
     }
 
     void CheckWaypointReached()
     {
-        float distanceToWaypoint = Vector3.Distance(transform.position, waypoints[currentWaypointIndex].position);
+        float distanceToWaypoint = Vector3.Distance(transform.position, activeZoneWaypoints[currentWaypointIndex].position);
 
-        if(distanceToWaypoint < distanceToWaypointThreshold && currentWaypointIndex != waypoints.Length - 1)
+        if(distanceToWaypoint < distanceToWaypointThreshold && currentWaypointIndex != activeZoneWaypoints.Length - 1)
         {
             currentWaypointIndex++;
         }
