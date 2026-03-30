@@ -79,7 +79,7 @@ public class PlayerMovement : MonoBehaviour
     private void Move()
     {
         if (sprintInput) { moveSpeed = 23f; }
-        else { moveSpeed = 17f; }
+        else { moveSpeed = 14f; }
 
         Vector3 moveDirection = (transform.forward * verticalMovementInputRaw).normalized;
         rb.linearVelocity = Vector3.Lerp(rb.linearVelocity, new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed), 1f * Time.deltaTime);
